@@ -1,0 +1,12 @@
+{
+  "digitalocean-apitoken": "",
+  "digitalocean-region": "nyc1",
+  "extra-ports": "",
+  "ssh-port": "22",
+  "vm-mem": "512mb",
+  "vm-name": "",
+  "vm-password": "",
+  "vm-publickey": "",
+  "vm-user-fullname": "",
+  "vm-username": ""
+}

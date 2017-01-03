@@ -1,0 +1,21 @@
+{
+  "datastore-cache-directory": "iso",
+  "datastore-cache-name": "backup01",
+  "datastore-name": "vm01",
+  "disk-size": "80000",
+  "esxi-host": "",
+  "esxi-password": "",
+  "esxi-port": "",
+  "esxi-username": "",
+  "extra-ports": "389,5000,5432,9200,9300",
+  "ssh-port": "22",
+  "vm-cpus": "2",
+  "vm-mem": "16384",
+  "vm-name": "infra01.howard.estate",
+  "vm-network": "VM Network",
+  "vm-password": "",
+  "vm-password-raw": "",
+  "vm-publickey": "",
+  "vm-user-fullname": "",
+  "vm-username": ""
+}

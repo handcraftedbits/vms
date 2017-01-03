@@ -1,0 +1,114 @@
+{
+  "variables": {
+    "datastore-cache-directory": "",
+    "datastore-cache-name": "",
+    "datastore-name": "",
+    "digitalocean-apitoken": "",
+    "digitalocean-region": "",
+    "disk-size": "",
+    "esxi-host": "",
+    "esxi-port": "",
+    "esxi-password": "",
+    "esxi-username": "",
+    "extra-ports": "",
+    "git-email": "",
+    "git-name": "",
+    "github-id": "",
+    "github-key-passphrase": "",
+    "iso-checksum": "23e97cd5d4145d4105fbf29878534049",
+    "iso-url": "http://releases.ubuntu.com/16.04/ubuntu-16.04-server-amd64.iso",
+    "ssh-port": "",
+    "vm-cpus": "",
+    "vm-mem": "",
+    "vm-name": "",
+    "vm-network": "",
+    "vm-password": "",
+    "vm-password-raw": "",
+    "vm-publickey": "",
+    "vm-user-fullname": "",
+    "vm-username": ""
+  },
+
+  "builders": [
+    {
+      "type": "digitalocean",
+      "api_token": "{{user `digitalocean-apitoken`}}",
+      "image": "ubuntu-16-04-x64",
+      "region": "{{user `digitalocean-region`}}",
+      "size": "{{user `vm-mem`}}",
+      "droplet_name": "{{user `vm-name`}}",
+      "snapshot_name": "{{user `vm-name`}}-ubuntu1604-{{timestamp}}"
+    },
+
+    {
+      "type": "vmware-iso",
+      "version": "11",
+      "headless": "true",
+      "http_directory": "http",
+      "keep_registered": "true",
+
+      "remote_type": "esx5",
+      "remote_host": "{{user `esxi-host`}}",
+      "remote_username": "{{user `esxi-username`}}",
+      "remote_password": "{{user `esxi-password`}}",
+      "remote_datastore": "{{user `datastore-name`}}",
+      "remote_cache_datastore": "{{user `datastore-cache-name`}}",
+      "remote_cache_directory": "{{user `datastore-cache-directory`}}",
+
+      "vm_name": "{{user `vm-name`}}",
+      "output_directory": "{{user `vm-name`}}",
+      "guest_os_type": "ubuntu-64",
+      "vmdk_name": "{{user `vm-name`}}",
+      "disk_size": "{{user `disk-size`}}",
+      "iso_url": "{{user `iso-url`}}",
+      "iso_checksum": "{{user `iso-checksum`}}",
+      "iso_checksum_type": "md5",
+      "ssh_username": "{{user `vm-username`}}",
+      "ssh_password": "{{user `vm-password-raw`}}",
+      "shutdown_command": "echo {{user `vm-password-raw`}} | sudo -S shutdown -P now",
+      "vmx_data": {
+        "ethernet0.networkName": "{{user `vm-network`}}",
+        "ethernet0.virtualDev": "vmxnet3",
+        "memSize": "{{user `vm-mem`}}",
+        "numvcpus": "{{user `vm-cpus`}}",
+        "scsi0.virtualDev": "pvscsi"
+      },
+
+      "boot_command": [
+        "<esc><f6><esc>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs>",
+        "preseed/url=http://{{.HTTPIP}}:{{.HTTPPort}}/preseed.cfg ",
+        "debian-installer=en_US auto locale=en_US ",
+        "kbd-chooser/method=us keyboard-configuration/layout=USA keyboard-configuration/variant=USA ",
+        "hostname={{user `vm-name`}} ",
+        "fb=false debconf/frontend=noninteractive ",
+        "console-setup/ask_detect=false ",
+        "passwd/user-fullname={{user `vm-user-fullname`}} ",
+        "passwd/username={{user `vm-username`}} ",
+        "passwd/user-password={{user `vm-password-raw`}} ",
+        "passwd/user-password-again={{user `vm-password-raw`}} ",
+        "initrd=/install/initrd.gz<enter>"
+      ]
+    }
+  ],
+  
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "echo {{user `vm-password-raw`}} | sudo -S apt-get install -y python"
+      ]
+    },
+
+    {
+      "type": "ansible",
+      "playbook_file": "{{user `playbook`}}",
+      "extra_arguments": [
+        "-e",
+        "ansible_become=yes ansible_become_user=root ansible_become_pass={{user `vm-password-raw`}} custom_ports={{user `extra-ports`}} git_email={{user `git-email`}} git_name={{user `git-name`}} github_id={{user `github-id`}} github_key_passphrase={{user `github-key-passphrase`}} hostname={{user `vm-name`}} password={{user `vm-password`}} ssh_port={{user `ssh-port`}} username={{user `vm-username`}} user_full_name='{{user `vm-user-fullname`}}' publickey='{{user `vm-publickey`}}'"
+      ]
+    }
+  ]
+}

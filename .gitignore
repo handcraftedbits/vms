@@ -1,0 +1,7 @@
+packer_cache/
+sshkeys/
+
+.DS_Store
+*.properties
+*.retry
+variables*.json

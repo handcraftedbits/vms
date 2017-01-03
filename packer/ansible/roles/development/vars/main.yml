@@ -1,0 +1,6 @@
+---
+no_iptables: true
+path_go: "{{ path_projects }}/go"
+path_projects: /opt/devel/projects
+version_golang: 1.7
+version_java: 8

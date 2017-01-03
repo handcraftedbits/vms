@@ -1,0 +1,36 @@
+---
+- name: install packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+
+- name: add Docker repository keys
+  apt_key:
+    id: 58118E89F3A912897C070ADBF76221572C52609D
+    keyserver: hkp://p80.pool.sks-keyservers.net:80
+    state: present
+
+- name: add Docker repository
+  apt_repository:
+    repo: deb https://apt.dockerproject.org/repo ubuntu-xenial main
+
+- name: install Docker
+  apt:
+    name: docker-engine
+    update_cache: yes
+
+- name: install docker-compose
+  get_url:
+    dest: /usr/local/bin/docker-compose
+    mode: 0755
+    url: https://github.com/docker/compose/releases/download/{{ version_docker_compose }}/docker-compose-Linux-x86_64
+
+- name: add default user to Docker group
+  user:
+    append: yes
+    groups: docker
+    name: "{{ username }}"

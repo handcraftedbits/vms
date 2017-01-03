@@ -1,0 +1,41 @@
+version: '2'
+
+services:
+  db:
+    image: postgres:9.5
+    restart: always
+    env_file:
+      - ./conf/db.properties
+    ports:
+      - "5432:5432"
+    volumes:
+      - /opt/volumes/db:/var/lib/postgresql/data
+
+  elasticsearch:
+    image: elasticsearch:2.4.0
+    restart: always
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+
+  ldap:
+    image: osixia/openldap:1.1.6
+    restart: always
+    env_file:
+      - ./conf/ldap.properties
+    ports:
+      - "389:389"
+    volumes:
+      - /opt/volumes/ldap:/var/lib/ldap
+      - /opt/volumes/slapd.d:/etc/ldap/slapd.d
+
+  logstash:
+    image: logstash:2.4.0
+    restart: always
+    command: logstash -f /opt/container/logstash/logstash.conf
+    links:
+      - elasticsearch
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data/opt/container/logstash:/opt/container/logstash

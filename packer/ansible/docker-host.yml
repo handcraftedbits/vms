@@ -1,0 +1,27 @@
+---
+- hosts: default
+  remote_user: "root"
+  roles:
+    - basic
+    - secured
+    - docker
+
+  tasks:
+    - name: create Docker host directory
+      file:
+        group: "{{ username }}"
+        owner: "{{ username }}"
+        path: /opt/vm
+        state: directory
+
+    - name: copy Docker host configuration
+      copy:
+        dest: /opt/vm
+        group: "{{ username }}"
+        owner: "{{ username }}"
+        src: ../../{{ hostname }}
+
+    - name: start Docker services
+      shell: docker-compose up -d
+      args:
+        chdir: /opt/vm/{{ hostname }}

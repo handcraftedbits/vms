@@ -1,0 +1,179 @@
+---
+- name: add apt repositories
+  apt_repository:
+    repo: "{{ item }}"
+    state: present
+  with_items:
+    - ppa:ansible/ansible
+    - ppa:gophers/archive
+    - ppa:webupd8team/java
+
+- name: configure Java package
+  debconf:
+    name: oracle-java{{ version_java }}-installer
+    question: shared/accepted-oracle-license-v1-1
+    value: "true"
+    vtype: select
+
+- name: install packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - ansible
+    - golang-{{ version_golang }}
+    - golang-{{ version_golang }}-race-detector-runtime
+    - maven
+    - oracle-java{{ version_java }}-installer
+
+- name: update Fish configuration
+  lineinfile:
+    dest: /home/{{ username }}/.config/fish/config.fish
+    line: "{{ item.line }}"
+    regexp: "{{ item.regexp }}"
+    state: present
+  with_items:
+    - { regexp: "^set -gx GOPATH", line: "set -gx GOPATH {{ path_go }}" }
+    - { regexp: "^set -gx GOROOT", line: "set -gx GOROOT /usr/lib/go-{{ version_golang }}" }
+    - { regexp: "^set -gx JAVA_HOME", line: "set -gx JAVA_HOME /usr/lib/jvm/java-{{ version_java }}-oracle" }
+    - { regexp: "^set -gx PATH", line: "set -gx PATH $GOROOT/bin $GOPATH/bin $PATH" }
+
+- name: copy SSH private keys
+  copy:
+    dest: /home/{{ username }}/.ssh
+    group: "{{ username }}"
+    mode: "0600"
+    owner: "{{ username }}"
+    src: "{{ item }}"
+  with_fileglob:
+    - ../../{{ hostname }}/sshkeys/*.pem
+
+- name: copy SSH public keys
+  copy:
+    dest: /home/{{ username }}/.ssh
+    group: "{{ username }}"
+    mode: "0644"
+    owner: "{{ username }}"
+    src: "{{ item }}"
+  with_fileglob:
+    - ../../{{ hostname }}/sshkeys/*.pub
+
+- name: link dotfiles
+  file:
+    dest: /home/{{ username }}/.ssh/config
+    src: /home/{{ username }}/.cloned-repos/dotfiles/ssh/config
+    state: link
+
+- name: copy SSH keys and configuration to root
+  copy:
+    dest: /root/.ssh/
+    group: root
+    mode: "0600"
+    owner: root
+    src: /home/{{ username }}/.ssh/
+
+- name: add Go project directory
+  file:
+    group: "{{ username }}"
+    owner: "{{ username }}"
+    path: /opt/devel/projects/go
+    state: directory
+
+- name: install Go binaries for Vim
+  shell: GOPATH={{ path_go }} GOROOT=/usr/lib/go-{{ version_golang }} PATH=/usr/lib/go-{{ version_golang }}/bin:$PATH go get {{ item }}
+  with_items:
+    - github.com/nsf/gocode
+    - github.com/alecthomas/gometalinter
+    - golang.org/x/tools/cmd/goimports
+    - golang.org/x/tools/cmd/guru
+    - golang.org/x/tools/cmd/gorename
+    - github.com/golang/lint/golint
+    - github.com/rogpeppe/godef
+    - github.com/kisielk/errcheck
+    - github.com/jstemmer/gotags
+    - github.com/klauspost/asmfmt/cmd/asmfmt
+    - github.com/fatih/motion
+    - github.com/zmb3/gogetdoc
+    - github.com/josharian/impl
+
+- name: create temporary askpass script
+  blockinfile:
+    block: "echo '{{ github_key_passphrase }}'"
+    create: yes
+    dest: /tmp/askpass.sh
+    marker: "#!/bin/sh\n"
+    mode: "0777"
+
+- name: retrieve GitHub SSH host key
+  shell: ssh-keyscan -t rsa github.com >> {{ item }}/.ssh/known_hosts
+  with_items:
+    - /home/{{ username }}
+    - /root
+
+- name: retrieve GitHub projects
+  uri:
+    method: GET
+    return_content: yes
+    url: https://api.github.com/users/{{ github_id }}/repos
+  register: projects
+
+- name: clone GitHub projects
+  shell: DISPLAY=:0 SSH_ASKPASS=/tmp/askpass.sh setsid git clone {{ item.ssh_url }}
+  args:
+    chdir: "{{ path_projects }}"
+  with_items:
+    - "{{ projects.json }}"
+  ignore_errors: yes
+
+- name: set Git configuration
+  git_config:
+    name: "{{ item.name }}"
+    scope: global
+    value: "{{ item.value }}"
+  with_items:
+    - { name: "user.email", value: "{{ git_email }}" }
+    - { name: "user.name", value: "{{ git_name }}" }
+
+- name: move Git configuration
+  command: mv /root/.gitconfig /home/{{ username }}
+
+- name: fix Git configuration permissions
+  file:
+    group: "{{ username }}"
+    owner: "{{ username }}"
+    path: /home/{{ username }}
+
+- name: list root SSH configuration files
+  shell: ls -1 /root/.ssh
+  register: root_ssh_files
+
+- name: remove root SSH configuration files
+  file:
+    path: /root/.ssh/{{ item }}
+    state: absent
+  with_items: "{{ root_ssh_files.stdout_lines }}"
+
+- name: update dotfile links
+  file:
+    dest: /home/{{ username }}/{{ item.dest }}
+    force: yes
+    src: /opt/devel/projects/dotfiles/{{ item.src }}
+    state: link
+  with_items:
+    - { src: "ssh/config", dest: ".ssh/config" }
+    - { src: "tmux/molokai.conf", dest: ".tmux/molokai.conf" }
+    - { src: "tmux/.tmux.conf", dest: ".tmux.conf" }
+    - { src: "vim/.vimrc", dest: ".vimrc" }
+    - { src: "vim/.vimrc", dest: ".config/nvim/init.vim" }
+
+- name: fix permissions
+  file:
+    group: "{{ username }}"
+    owner: "{{ username }}"
+    path: "{{ item }}"
+    recurse: yes
+    state: directory
+  with_items:
+    - /home/{{ username }}
+    - /opt/devel

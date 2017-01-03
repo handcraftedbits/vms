@@ -1,0 +1,8 @@
+---
+- hosts: default
+  remote_user: "root"
+  roles:
+    - basic
+    - secured
+    - docker
+    - development
