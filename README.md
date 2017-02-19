@@ -39,7 +39,7 @@ packer build -var-file=../<hostname>/variables-[digitalocean|esxi].json -var 'pl
 | vm-name                   | The hostname of the VM                                                                                                  | Both         |              |
 | vm-network                | The name of the virtual network to use                                                                                  | ESXi         |              |
 | vm-password               | The password for the `vm-username` account, encrypted with `mkpasswd --method=sha-512`                                  | Both         |              |
-| vm-password-raw           | The password for the `vm-username` account, unencrypted                                                                 | Both         |              |
+| vm-password-raw           | The password for the `vm-username` account, unencrypted                                                                 | ESXi         |              |
 | vm-publickey              | The public key used for SSH connections                                                                                 | Both         | secured      |
 | vm-user-fullname          | The full name of the user account to create                                                                             | Both         |              |
 | vm-username               | The user account to create                                                                                              | Both         |              |  |

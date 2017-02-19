@@ -2,6 +2,8 @@ packer_cache/
 sshkeys/
 
 .DS_Store
+*.pem
 *.properties
 *.retry
+**/letsencrypt
 variables*.json

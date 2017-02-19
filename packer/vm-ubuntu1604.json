@@ -37,7 +37,8 @@
       "region": "{{user `digitalocean-region`}}",
       "size": "{{user `vm-mem`}}",
       "droplet_name": "{{user `vm-name`}}",
-      "snapshot_name": "{{user `vm-name`}}-ubuntu1604-{{timestamp}}"
+      "snapshot_name": "{{user `vm-name`}}-ubuntu1604-{{timestamp}}",
+      "ssh_username": "root"
     },
 
     {

@@ -1,0 +1,34 @@
+version: "2.1"
+
+volumes:
+  data:
+
+services:
+  hugo:
+    image: handcraftedbits/nginx-unit-hugo-extras
+    environment:
+      - NGINX_UNIT_HOSTS=curtisshoward.com
+      - NGINX_URL_PREFIX=/
+      - HUGO_REPO_URL=https://github.com/handcraftedbits/curtisshoward.com.git
+      - HUGO_THEME=hugo-hcb-personal
+    env_file: ./environment.properties
+    restart: always
+    volumes:
+      - data:/opt/container/shared
+      - ./data/opt/container/script/post-build.sh:/opt/container/script/post-hugo-build.sh
+      - ./data/opt/container/script/pre-build.sh:/opt/container/script/pre-hugo-build.sh
+
+  proxy:
+    image: handcraftedbits/nginx-host
+    links:
+      - hugo
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+    volumes:
+      - data:/opt/container/shared
+      - ./data/etc/letsencrypt:/etc/letsencrypt
+      - ./data/etc/nginx/extra.conf:/etc/nginx/extra.conf
+      - ./data/etc/nginx/extra/curtisshoward.com.extra.conf:/etc/nginx/extra/curtisshoward.com.extra.conf
+      - ./data/etc/ssl/dhparam.pem:/etc/ssl/dhparam.pem
