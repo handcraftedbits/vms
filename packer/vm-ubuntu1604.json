@@ -47,7 +47,8 @@
       "headless": "true",
       "http_directory": "http",
       "keep_registered": "true",
-
+      "vnc_disable_password": "true",
+      
       "remote_type": "esx5",
       "remote_host": "{{user `esxi-host`}}",
       "remote_username": "{{user `esxi-username`}}",
