@@ -20,6 +20,7 @@
   "vm-password": "",
   "vm-password-raw": "",
   "vm-publickey": "",
+  "vm-swap": "",
   "vm-user-fullname": "",
   "vm-username": ""
 }

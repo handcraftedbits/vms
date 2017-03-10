@@ -7,6 +7,7 @@
   "vm-name": "curtisshoward.com",
   "vm-password": "",
   "vm-publickey": "",
+  "vm-swap": "1024M",
   "vm-user-fullname": "",
   "vm-username": ""
 }

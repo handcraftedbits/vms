@@ -24,6 +24,7 @@
     "vm-network": "",
     "vm-password": "",
     "vm-password-raw": "",
+    "vm-swap": "",
     "vm-publickey": "",
     "vm-user-fullname": "",
     "vm-username": ""
@@ -109,7 +110,7 @@
       "playbook_file": "{{user `playbook`}}",
       "extra_arguments": [
         "-e",
-        "ansible_become=yes ansible_become_user=root ansible_become_pass={{user `vm-password-raw`}} custom_ports={{user `extra-ports`}} git_email={{user `git-email`}} git_name={{user `git-name`}} github_id={{user `github-id`}} github_key_passphrase={{user `github-key-passphrase`}} hostname={{user `vm-name`}} password={{user `vm-password`}} ssh_port={{user `ssh-port`}} username={{user `vm-username`}} user_full_name='{{user `vm-user-fullname`}}' publickey='{{user `vm-publickey`}}'"
+        "ansible_become=yes ansible_become_user=root ansible_become_pass={{user `vm-password-raw`}} custom_ports={{user `extra-ports`}} git_email={{user `git-email`}} git_name={{user `git-name`}} github_id={{user `github-id`}} github_key_passphrase={{user `github-key-passphrase`}} hostname={{user `vm-name`}} password={{user `vm-password`}} ssh_port={{user `ssh-port`}} username={{user `vm-username`}} user_full_name='{{user `vm-user-fullname`}}' publickey='{{user `vm-publickey`}}' swap='{{user `vm-swap`}}'"
       ]
     }
   ]

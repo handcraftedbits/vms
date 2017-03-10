@@ -17,6 +17,10 @@
     password: "{{ password }}"
     state: present
 
+- name: add swap space
+  shell: fallocate -l {{ swap }} /swapfile && chmod 600 /swapfile && mkswap /swapfile && echo "/swapfile none swap sw 0 0" | tee -a /etc/fstab
+  when: swap is defined and swap != ""
+
 - name: update all dependencies
   apt:
     update_cache: yes
