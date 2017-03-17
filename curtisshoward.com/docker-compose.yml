@@ -11,12 +11,17 @@ services:
       - NGINX_URL_PREFIX=/
       - HUGO_REPO_URL=https://github.com/handcraftedbits/curtisshoward.com.git
       - HUGO_THEME=hugo-hcb-personal
+      - HUGO_IGNORE_CACHE=true
     env_file: ./environment.properties
     restart: always
     volumes:
       - data:/opt/container/shared
       - ./data/opt/container/script/post-build.sh:/opt/container/script/post-hugo-build.sh
       - ./data/opt/container/script/pre-build.sh:/opt/container/script/pre-hugo-build.sh
+
+  netshot:
+    image: handcraftedbits/netshot
+    restart: always
 
   proxy:
     image: handcraftedbits/nginx-host
