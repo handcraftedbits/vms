@@ -25,3 +25,8 @@
       shell: docker-compose up -d
       args:
         chdir: /opt/vm/{{ hostname }}
+
+    - name: stop Docker services
+      shell: docker-compose stop
+      args:
+        chdir: /opt/vm/{{ hostname }}

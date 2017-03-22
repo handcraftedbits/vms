@@ -1,6 +1,6 @@
-# curtisshoward.com VM
+# curtisshoward.com and handcraftedbits.com VM
 
-The VM for [https://curtisshoward.com](curtisshoward.com).
+The VM for [https://curtisshoward.com](curtisshoward.com) and [https://handcraftedbits.com](handcraftedbits.com).
 
 # Configuration
 

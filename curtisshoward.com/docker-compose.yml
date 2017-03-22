@@ -25,8 +25,12 @@ services:
 
   proxy:
     image: handcraftedbits/nginx-host
+    environment:
+      - NGINX_WWW_REDIRECT_HOSTS=curtisshoward.com,handcraftedbits.com
     links:
       - hugo
+      - redirector
+      - static
     ports:
       - "80:80"
       - "443:443"
@@ -34,6 +38,27 @@ services:
     volumes:
       - data:/opt/container/shared
       - ./data/etc/letsencrypt:/etc/letsencrypt
-      - ./data/etc/nginx/extra.conf:/etc/nginx/extra.conf
       - ./data/etc/nginx/extra/curtisshoward.com.extra.conf:/etc/nginx/extra/curtisshoward.com.extra.conf
+      - ./data/etc/nginx/extra/handcraftedbits.com.extra.conf:/etc/nginx/extra/handcraftedbits.com.extra.conf
       - ./data/etc/ssl/dhparam.pem:/etc/ssl/dhparam.pem
+
+  redirector:
+    image: handcraftedbits/nginx-unit-go-import-redirector
+    environment:
+      - NGINX_UNIT_HOSTS=handcraftedbits.com
+      - NGINX_URL_PREFIX=/go
+      - REDIRECTOR_IMPORT=handcraftedbits.com/go/*
+      - REDIRECTOR_REPO=https://github.com/handcraftedbits/*
+    restart: always
+    volumes:
+      - data:/opt/container/shared
+
+  static:
+    image: handcraftedbits/nginx-unit-static
+    environment:
+      - NGINX_UNIT_HOSTS=handcraftedbits.com
+      - NGINX_URL_PREFIX=/
+    restart: always
+    volumes:
+      - data:/opt/container/shared
+      - ./data/www-static/handcraftedbits.com:/opt/container/www-static
