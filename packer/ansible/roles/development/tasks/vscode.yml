@@ -1,0 +1,58 @@
+---
+- name: (vscode) add apt key
+  apt_key:
+    state: present
+    url: https://packages.microsoft.com/keys/microsoft.asc
+
+- name: (vscode) add repository
+  apt_repository:
+    state: present
+    repo: "deb [arch=amd64] http://packages.microsoft.com/repos/vscode stable main"
+
+- name: (vscode) install packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - code
+    - libasound2
+    - libgconf-2-4
+    - libgtk2.0-0
+    - libxss1
+
+- name: (vscode) install extensions
+  shell: code --install-extension {{ item }} --user-data-dir=/home/{{ username }}/.vscodetemp
+  with_items:
+    - AlanWalk.markdown-toc
+    - Arjun.swagger-viewer
+    - EditorConfig.EditorConfig
+    - PeterJausovec.vscode-docker
+    - haaaad.ansible
+    - humao.rest-client
+    - lukehoban.Go
+    - robertohuertasm.vscode-icons
+    - shuworks.vscode-table-formatter
+    - timonwong.ansible-autocomplete
+    - vscodevim.vim
+
+- name: (vscode) move extensions from root directory to user directory
+  shell: |
+    mv /root/.vscode /home/{{ username }}
+    rm -rf /home/{{ username }}/.vscodetemp
+
+- name: (vscode) create user config directory
+  file:
+    group: "{{ username }}"
+    owner: "{{ username }}"
+    path: /home/{{ username }}/.config/Code/User
+    state: directory
+
+- name: (vscode) update dotfile links
+  file:
+    dest: /home/{{ username }}/{{ item.dest }}
+    force: yes
+    src: /opt/devel/projects/dotfiles/{{ item.src }}
+    state: link
+  with_items:
+    - { src: "vscode/settings.json", dest: ".config/Code/User/settings.json" }

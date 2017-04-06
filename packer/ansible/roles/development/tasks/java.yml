@@ -1,0 +1,23 @@
+---
+- name: (java) add apt repository
+  apt_repository:
+    repo: "{{ item }}"
+    state: present
+  with_items:
+    - ppa:webupd8team/java
+
+- name: (java) configure package
+  debconf:
+    name: oracle-java{{ version_java }}-installer
+    question: shared/accepted-oracle-license-v1-1
+    value: "true"
+    vtype: select
+
+- name: (java) install package
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - oracle-java{{ version_java }}-installer
+

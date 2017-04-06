@@ -1,0 +1,32 @@
+---
+- name: (xfce) install package
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - xfce4
+
+- name: (xfce) remove configuration directories
+  file:
+    name: /home/{{ username }}/{{ item }}
+    state: absent
+  with_items:
+    - .config/xfce4
+    - Desktop
+
+- name: (xfce) create configuration directory
+  file:
+    name: /home/{{ username }}/.config/xfce4
+    state: directory
+
+- name: (xfce) update dotfile links
+  file:
+    dest: /home/{{ username }}/{{ item.dest }}
+    force: yes
+    src: /opt/devel/projects/dotfiles/{{ item.src }}
+    state: link
+  with_items:
+    - { src: "xfce4/xfconf", dest: ".config/xfce4/xfconf" }
+    - { src: "xfce4/Desktop", dest: "Desktop" }
+

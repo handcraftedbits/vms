@@ -1,0 +1,48 @@
+---
+- name: (go) add apt repository
+  apt_repository:
+    repo: "{{ item }}"
+    state: present
+  with_items:
+    - ppa:gophers/archive
+
+- name: (go) install packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - golang-{{ version_golang }}
+    - golang-{{ version_golang }}-race-detector-runtime
+
+- name: (go) add project directory
+  file:
+    group: "{{ username }}"
+    owner: "{{ username }}"
+    path: /opt/devel/projects/go
+    state: directory
+
+- name: (go) install binaries for Vim and VS Code
+  shell: GOPATH={{ path_go }} GOROOT=/usr/lib/go-{{ version_golang }} PATH=/usr/lib/go-{{ version_golang }}/bin:$PATH go get {{ item }}
+  with_items:
+    - github.com/alecthomas/gometalinter
+    - github.com/cweill/gotests/gotests
+    - github.com/derekparker/delve/cmd/dlv
+    - github.com/fatih/gomodifytags
+    - github.com/fatih/motion
+    - github.com/golang/lint/golint
+    - github.com/josharian/impl
+    - github.com/jstemmer/gotags
+    - github.com/kisielk/errcheck
+    - github.com/klauspost/asmfmt/cmd/asmfmt
+    - github.com/lukehoban/go-outline
+    - github.com/newhook/go-symbols
+    - github.com/nsf/gocode
+    - github.com/rogpeppe/godef
+    - github.com/sqs/goreturns
+    - github.com/tpng/gopkgs
+    - github.com/zmb3/gogetdoc
+    - golang.org/x/tools/cmd/godoc
+    - golang.org/x/tools/cmd/goimports
+    - golang.org/x/tools/cmd/gorename
+    - golang.org/x/tools/cmd/guru

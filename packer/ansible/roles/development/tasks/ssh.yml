@@ -1,0 +1,43 @@
+---
+- name: (ssh) copy private keys
+  copy:
+    dest: /home/{{ username }}/.ssh
+    group: "{{ username }}"
+    mode: "0600"
+    owner: "{{ username }}"
+    src: "{{ item }}"
+  with_fileglob:
+    - ../../{{ hostname }}/sshkeys/*.pem
+
+- name: (ssh) copy public keys
+  copy:
+    dest: /home/{{ username }}/.ssh
+    group: "{{ username }}"
+    mode: "0644"
+    owner: "{{ username }}"
+    src: "{{ item }}"
+  with_fileglob:
+    - ../../{{ hostname }}/sshkeys/*.pub
+
+- name: (ssh) link dotfiles
+  file:
+    dest: /home/{{ username }}/.ssh/config
+    src: /home/{{ username }}/.cloned-repos/dotfiles/ssh/config
+    state: link
+
+- name: (ssh) copy keys and configuration to root
+  copy:
+    dest: /root/.ssh/
+    group: root
+    mode: "0600"
+    owner: root
+    src: /home/{{ username }}/.ssh/
+
+- name: (ssh) update dotfile links
+  file:
+    dest: /home/{{ username }}/{{ item.dest }}
+    force: yes
+    src: /opt/devel/projects/dotfiles/{{ item.src }}
+    state: link
+  with_items:
+    - { src: "ssh/config", dest: ".ssh/config" }

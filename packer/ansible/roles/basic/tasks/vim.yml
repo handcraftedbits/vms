@@ -1,0 +1,55 @@
+---
+- name: (vim) add apt repositories
+  apt_repository:
+    repo: "{{ item }}"
+    state: present
+  with_items:
+    - ppa:neovim-ppa/unstable
+
+- name: (vim) install packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - exuberant-ctags
+    - neovim
+
+- name: (vim) create configuration directory
+  file:
+    path: /home/{{ username }}/{{ item }}
+    state: directory
+  with_items:
+    - .config/nvim
+
+- name: (vim) link dotfiles
+  file:
+    dest: /home/{{ username }}/{{ item.dest }}
+    src: /home/{{ username }}/.cloned-repos/dotfiles/{{ item.src }}
+    state: link
+  with_items:
+    - { src: "vim/.vimrc", dest: ".vimrc" }
+    - { src: "vim/.vimrc", dest: ".config/nvim/init.vim" }
+
+- name: (vim) link Neovim configuration directory
+  file:
+    dest: /home/{{ username }}/.vim
+    src: /home/{{ username }}/.config/nvim
+    state: link
+
+- name: (vim) install Vundle
+  git:
+    dest: /home/{{ username }}/.vim/bundle/Vundle.vim
+    repo: https://github.com/VundleVim/Vundle.vim.git
+
+- name: (vim) install Vundle plugins
+  shell: HOME=/home/{{ username }} vim -c VundleUpdate -c quitall > /dev/null
+
+- name: (vim) update alternatives
+  alternatives:
+    name: "{{ item.name }}"
+    path: "{{ item.path }}"
+  with_items:
+    - { name: "editor", path: "/usr/bin/nvim" }
+    - { name: "vi", path: "/usr/bin/nvim" }
+    - { name: "vim", path: "/usr/bin/nvim" }

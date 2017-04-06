@@ -1,0 +1,52 @@
+---
+- name: (vnc) install TigerVNC
+  apt:
+    deb: https://bintray.com/tigervnc/stable/download_file?file_path=ubuntu-16.04LTS%2Famd64%2Ftigervncserver_{{ version_tigervnc }}ubuntu1_amd64.deb
+
+- name: (vnc) create configuration directory
+  file:
+    path: /home/{{ username }}/.vnc
+    state: directory
+
+- name: (vnc) set password
+  shell: echo -n {{ ansible_become_pass }} | vncpasswd -f > /home/{{ username }}/.vnc/passwd
+
+- name: (vnc) set password file permissions
+  file:
+    mode: "0600"
+    path: /home/{{ username }}/.vnc/passwd
+    state: file
+
+- name: (vnc) create xstartup file
+  copy:
+    content: |
+      "#!/bin/bash"
+      xrdb $HOME/.Xresources
+      startxfce4 &
+    dest: /home/{{ username }}/.vnc/xstartup
+    group: "{{ username }}"
+    mode: "0755"
+    owner: "{{ username }}"
+
+- name: (vnc) create systemd service
+  copy:
+    content: |
+      [Unit]
+      Description=Start VNC server at startup
+      After=syslog.target network.target
+      [Service]
+      Type=forking
+      User={{ username }}
+      PAMName=login
+      PIDFile=/home/{{ username }}/.vnc/%H:%i.pid
+      ExecStartPre=-/usr/bin/vncserver -kill :%i > /dev/null 2>&1
+      ExecStart=/usr/bin/vncserver -depth 24 -geometry 1024x768 :%i
+      ExecStop=/usr/bin/vncserver -kill :%i
+      [Install]
+      WantedBy=multi-user.target
+    dest: /etc/systemd/system/vncserver@.service
+
+- name: (vnc) enable systemd service
+  service:
+    enabled: yes
+    name: vncserver@1

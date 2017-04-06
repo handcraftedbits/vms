@@ -4,3 +4,5 @@ path_go: "{{ path_projects }}/go"
 path_projects: /opt/devel/projects
 version_golang: 1.8
 version_java: 8
+version_packer: 1.0.0
+version_tigervnc: 1.7.1-1
