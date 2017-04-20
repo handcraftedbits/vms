@@ -8,6 +8,7 @@
   "esxi-port": "",
   "esxi-username": "",
   "extra-ports": "",
+  "extra-ports-udp": "",
   "git-email": "opensource@handcraftedbits.com",
   "git-name": "HandcraftedBits",
   "github-id": "handcraftedbits",

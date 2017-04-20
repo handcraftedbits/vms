@@ -45,21 +45,31 @@
   register: iptables3
   when: no_iptables is not defined
 
-- name: (iptables) allow inbound traffic on custom ports
+- name: (iptables) allow inbound TCP traffic on custom ports
   iptables:
     chain: INPUT
     destination_port: "{{ item }}"
     jump: ACCEPT
     protocol: tcp
-  register: iptables4
-  when: no_iptables is not defined and {{ custom_ports|default('') != '' }}
+  register: iptables5
+  when: no_iptables is not defined and custom_ports|default('') != ''
   with_items: "{{ custom_ports.split(',') }}"
+
+- name: (iptables) allow inbound UDP traffic on custom ports
+  iptables:
+    chain: INPUT
+    destination_port: "{{ item }}"
+    jump: ACCEPT
+    protocol: udp
+  register: iptables6
+  when: no_iptables is not defined and custom_ports_udp|default('') != ''
+  with_items: "{{ custom_ports_udp.split(',') }}"
 
 - name: (iptables) drop all other traffic
   iptables:
     chain: INPUT
     jump: DROP
-  register: iptables5
+  register: iptables7
   when: no_iptables is not defined
 
 - name: (iptables) save rules
@@ -67,4 +77,4 @@
   with_items:
     - rules.v4
     - rules.v6
-  when: no_iptables is not defined and (iptables0.changed or iptables1.changed or iptables2.changed or iptables3.changed or iptables4.changed or iptables5.changed)
+  when: no_iptables is not defined and (iptables0.changed or iptables1.changed or iptables2.changed or iptables3.changed or iptables4.changed or iptables5.changed or iptables6.changed or iptables7.changed)

@@ -1,41 +1,18 @@
-version: '2'
+version: "2.1"
 
 services:
-  db:
-    image: postgres:9.5
-    restart: always
-    env_file:
-      - ./conf/db.properties
+  samba:
+    image: dperson/samba
+    environment:
+      - GROUPID=${SAMBA_GROUP_ID}
+      - USERID=${SAMBA_USER_ID}
+    command: -u "${SAMBA_USERNAME};${SAMBA_PASSWORD}" -s "hcb-shared;/hcb-shared;yes;no;no;${SAMBA_USERNAME}" -n
     ports:
-      - "5432:5432"
+      - "137:137/udp"
+      - "138:138/udp"
+      - "139:139"
+      - "445:445"
+    network_mode: "host"
+    restart: always
     volumes:
-      - /opt/volumes/db:/var/lib/postgresql/data
-
-  elasticsearch:
-    image: elasticsearch:2.4.0
-    restart: always
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-
-  ldap:
-    image: osixia/openldap:1.1.6
-    restart: always
-    env_file:
-      - ./conf/ldap.properties
-    ports:
-      - "389:389"
-    volumes:
-      - /opt/volumes/ldap:/var/lib/ldap
-      - /opt/volumes/slapd.d:/etc/ldap/slapd.d
-
-  logstash:
-    image: logstash:2.4.0
-    restart: always
-    command: logstash -f /opt/container/logstash/logstash.conf
-    links:
-      - elasticsearch
-    ports:
-      - "5000:5000"
-    volumes:
-      - ./data/opt/container/logstash:/opt/container/logstash
+      - /mnt/hcb-shared:/hcb-shared

@@ -1,5 +1,7 @@
 {
   "variables": {
+    "aws_access_key": "",
+    "aws_access_key_id": "",
     "datastore-cache-directory": "",
     "datastore-cache-name": "",
     "datastore-name": "",
@@ -11,12 +13,11 @@
     "esxi-password": "",
     "esxi-username": "",
     "extra-ports": "",
+    "extra-ports-udp": "",
     "git-email": "",
     "git-name": "",
     "github-id": "",
     "github-key-passphrase": "",
-    "iso-checksum": "23e97cd5d4145d4105fbf29878534049",
-    "iso-url": "http://releases.ubuntu.com/16.04/ubuntu-16.04-server-amd64.iso",
     "ssh-port": "",
     "vm-cpus": "",
     "vm-mem": "",
@@ -34,11 +35,11 @@
     {
       "type": "digitalocean",
       "api_token": "{{user `digitalocean-apitoken`}}",
-      "image": "ubuntu-16-04-x64",
+      "image": "{{user `ubuntu-image`}}",
       "region": "{{user `digitalocean-region`}}",
       "size": "{{user `vm-mem`}}",
       "droplet_name": "{{user `vm-name`}}",
-      "snapshot_name": "{{user `vm-name`}}-ubuntu1604-{{timestamp}}",
+      "snapshot_name": "{{user `vm-name`}}-ubuntu{{user `ubuntu-version`}}-{{timestamp}}",
       "ssh_username": "root"
     },
 
@@ -108,9 +109,48 @@
     {
       "type": "ansible",
       "playbook_file": "{{user `playbook`}}",
+      "ansible_env_vars": [
+        "ANSIBLE_ROLES_PATH={{user `roles-path`}}"
+      ],
       "extra_arguments": [
         "-e",
-        "ansible_become=yes ansible_become_user=root ansible_become_pass={{user `vm-password-raw`}} custom_ports={{user `extra-ports`}} git_email={{user `git-email`}} git_name={{user `git-name`}} github_id={{user `github-id`}} github_key_passphrase={{user `github-key-passphrase`}} hostname={{user `vm-name`}} password={{user `vm-password`}} ssh_port={{user `ssh-port`}} username={{user `vm-username`}} user_full_name='{{user `vm-user-fullname`}}' publickey='{{user `vm-publickey`}}' swap='{{user `vm-swap`}}'"
+        "ansible_become=yes",
+        "-e",
+        "ansible_become_pass={{user `vm-password-raw`}}",
+        "-e",
+        "ansible_become_user=root",
+        "-e",
+        "aws_access_key={{user `aws-access-key`}}",
+        "-e",
+        "aws_access_key_id={{user `aws-access-key-id`}}",
+        "-e",
+        "custom_ports={{user `extra-ports`}}",
+        "-e",
+        "custom_ports_udp={{user `extra-ports-udp`}}",
+        "-e",
+        "git_email={{user `git-email`}}",
+        "-e",
+        "git_name={{user `git-name`}}",
+        "-e",
+        "github_id={{user `github-id`}}",
+        "-e",
+        "github_key_passphrase={{user `github-key-passphrase`}}",
+        "-e",
+        "host_dir='{{user `host-dir`}}'",
+        "-e",
+        "hostname={{user `vm-name`}}",
+        "-e",
+        "password={{user `vm-password`}}",
+        "-e",
+        "publickey='{{user `vm-publickey`}}'",
+        "-e",
+        "ssh_port={{user `ssh-port`}}",
+        "-e",
+        "swap='{{user `vm-swap`}}'",
+        "-e",
+        "username={{user `vm-username`}}",
+        "-e",
+        "user_full_name='{{user `vm-user-fullname`}}'"
       ]
     }
   ]

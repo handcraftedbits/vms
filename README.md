@@ -8,10 +8,8 @@ Configuration for personal VMs that are provisioned with [Packer](https://www.pa
 
 ## Creating VMs
 
-Run Packer from the `packer` subdirectory:
-
 ```shell
-packer build -var-file=../<hostname>/variables-[digitalocean|esxi].json -var 'playbook=ansible/<role>.yml' -only=[digitalocean|vmware-iso] <packerfile> 
+packer/build.sh [digitalocean|esxi] [16.04|16.10|17.04] [hostname]
 ```
 
 ## Properties for File Specified via `-var-file`
@@ -28,7 +26,8 @@ packer build -var-file=../<hostname>/variables-[digitalocean|esxi].json -var 'pl
 | esxi-password             | The password for the ESXi server                                                                                        | ESXi         |              |
 | esxi-port                 | The port used by the ESXi server                                                                                        | ESXi         |              |
 | esxi-username             | The username for the ESXi server                                                                                        | ESXi         |              |
-| extra-ports               | Additional ports to let through the firewall, comma-separated                                                           | Both         | secured      |
+| extra-ports               | Additional TCP ports to let through the firewall, comma-separated                                                       | Both         | secured      |
+| extra-ports-udp           | Additional UDP ports to let through the firewall, comma-separated                                                       | Both         | secured      |
 | git-email                 | The e-mail address for the default Git user                                                                             | Both         | development  |
 | git-name                  | The name for the default Git user                                                                                       | Both         | development  |
 | github-id                 | The GitHub ID to use                                                                                                    | Both         | development  |
@@ -49,11 +48,12 @@ packer build -var-file=../<hostname>/variables-[digitalocean|esxi].json -var 'pl
 
 | Name        | Description                                                                                             |
 | :---------- | :------------------------------------------------------------------------------------------------------ |
+| basic       | Minimal HandcraftedBits Linux environment                                                               |
 | development | Standard HandcraftedBits development environment                                                        |
 | docker-host | Bare-bones environment that auto-starts Docker services specified in `../<hostname>/docker-compose.yml` |
 
 ## Available `<packerfile>`s
 
-| Name          | Description                                       |
-| :------------ | :------------------------------------------------ |
-| vm-ubuntu1604 | Ubuntu [16.04](http://releases.ubuntu.com/16.04/) |
+| Name      | Description                       |
+| :-------- | :-------------------------------- |
+| vm-ubuntu | [Ubuntu](https://www.ubuntu.com/) |

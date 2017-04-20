@@ -1,9 +1,0 @@
-# Common patterns
-STRING_WITHIN_QUOTES [^"]*
-
-# Docker patterns
-CONTAINER_ID [0-9a-f]{12}
-DOCKER_INFO <%{NONNEGINT}>%{MONTH} %{MONTHDAY} %{TIME} docker/%{CONTAINER_ID:containerID}[^:]*:
-
-# NGINX patterns
-NGINX_HOST_ACCESS %{DOCKER_INFO} %{IP:clientIP} [^"]*"%{WORD:httpVerb} %{URIPATHPARAM:requestURI}[^"]*" %{NONNEGINT:httpStatus:int} %{NONNEGINT:responseSize:int} "%{STRING_WITHIN_QUOTES:referer}" "%{STRING_WITHIN_QUOTES:userAgent}"
