@@ -66,9 +66,11 @@
       [Unit]
       Description=Mount S3 filesystem
       Wants=network-online.target
+      After=network-online.target
       [Service]
       ExecStart=/usr/bin/mount.s3ql --fg --authfile /etc/s3ql.authinfo --allow-other --cachedir /var/cache/s3ql s3://hcb-shared /mnt/hcb-shared
       ExecStop=/usr/bin/umount.s3ql /mnt/hcb-shared
+      TimeoutStopSec=600
       [Install]
       WantedBy=multi-user.target
     dest: /etc/systemd/system/s3ql.service

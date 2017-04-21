@@ -4,9 +4,3 @@
   roles:
     - infrastructure
     - docker-host
-
-  tasks:
-    - name: (infra01) manually stop s3ql service
-      service:
-        name: s3ql
-        state: stopped
