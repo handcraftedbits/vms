@@ -2,5 +2,5 @@
 - name: (packer) install
   unarchive:
     dest: /usr/local/bin
-    src: https://releases.hashicorp.com/packer/{{ version_packer }}/packer_{{ version_packer }}_linux_amd64.zip
     remote_src: yes
+    src: https://releases.hashicorp.com/packer/{{ version_packer }}/packer_{{ version_packer }}_linux_amd64.zip

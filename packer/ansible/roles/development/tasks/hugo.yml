@@ -1,0 +1,13 @@
+---
+- name: (hugo) download and extract
+  unarchive:
+    dest: /tmp
+    remote_src: yes
+    src: https://github.com/spf13/hugo/releases/download/v{{ version_hugo }}/hugo_{{ version_hugo }}_Linux-64bit.tar.gz
+
+- name: (hugo) move binary
+  copy:
+    dest: /usr/local/bin/hugo
+    mode: "0755"
+    remote_src: yes
+    src: /tmp/hugo_{{ version_hugo }}_linux_amd64/hugo_{{ version_hugo }}_linux_amd64
