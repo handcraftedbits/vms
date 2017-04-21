@@ -21,7 +21,7 @@
   register: projects
 
 - name: (github) clone projects
-  shell: DISPLAY=:0 SSH_ASKPASS=/tmp/askpass.sh setsid git clone {{ item.ssh_url }}
+  shell: DISPLAY=:0 SSH_ASKPASS=/tmp/askpass.sh setsid git clone --recursive {{ item.ssh_url }}
   args:
     chdir: "{{ path_projects }}"
   with_items:
