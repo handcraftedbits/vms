@@ -1,0 +1,18 @@
+{
+  "builder_type": "esxi",
+
+  "defaults": {
+    "git-email": "opensource@handcraftedbits.com",
+    "git-name": "HandcraftedBits",
+    "gpg-key": "0xBCB3656DC6035119",
+    "vm-esxi-cpus": "2",
+    "vm-mem": "8192"
+  },
+
+  "required": [
+    "git-email",
+    "git-name",
+    "github-id",
+    "gpg-key"
+  ]
+}

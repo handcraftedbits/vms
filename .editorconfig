@@ -1,0 +1,7 @@
+[*.{json,yml}]
+indent_size = 2
+indent_style = space
+
+[*.sh]
+indent_size = 5
+indent_style = space

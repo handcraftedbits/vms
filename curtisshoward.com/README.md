@@ -6,42 +6,29 @@ The VM for [https://curtisshoward.com](curtisshoward.com) and [https://handcraft
 
 ## Variables
 
-### VM
-
-Rename `variables-digitalocean.json.template` to `variables-digitalocean.json` and set
-
-* `digitalocean-apitoken`
-* `vm-password`
-* `vm-publickey`
-* `vm-user-fullname`
-* `vm-username`
-
 ### Docker
 
-Rename `environment.properties.template` to `environment.properties` and set
+Rename `provision_data/environment.properties.template` to `provision_data/environment.properties` and set
 
 * `HUGO_GITHUB_SECRET`
 
 ## Certificates
 
-Copy `/etc/letsencrypt` to `data/etc/letsencrypt` (also, fix ownership):
+Copy `/etc/letsencrypt` to `provision_data/data/etc/letsencrypt` (also, fix ownership):
 
 ```bash
-mkdir -p data/etc && cp -R /etc/letsencrypt data/etc/letsencrypt
+mkdir cp -R /etc/letsencrypt provision_data/data/etc/letsencrypt
 ```
 
 ## dhparam.pem
 
-Make a link from `/etc/ssl/dhparam.pem` to `data/etc/ssl/dhparam.pem`:
+Make a link from `/etc/ssl/dhparam.pem` to `provision_data/data/etc/ssl/dhparam.pem`:
 
 ```bash
-mkdir -p data/etc/ssl && ln -sf /etc/ssl/dhparam.pem data/etc/ssl/dhparam.pem
+mkdir -p data/etc/ssl && ln -sf /etc/ssl/dhparam.pem provision_data/data/etc/ssl/dhparam.pem
 ```
 
-# Usage
+## Post-provisioing
 
-Provision the VM, from the `packer` subdirectory:
-
-```bash
-packer build -var-file=../curtisshoward.com/variables-digitalocean.json -var 'playbook=ansible/docker-host.yml' -only=digitalocean vm-ubuntu1604.json
-```
+DigitalOcean always adds `PasswordAuthentication yes` to `/etc/ssh/sshd_config`, so manually disable that after the VM
+has been provisioned.

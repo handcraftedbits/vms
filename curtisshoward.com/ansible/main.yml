@@ -1,5 +1,8 @@
 ---
-- hosts: default
-  remote_user: "root"
+- hosts: localhost
+  become: yes
   roles:
-    - docker-host
+    - handcraftedbits/basic
+    - handcraftedbits/secured
+    - handcraftedbits/docker
+    - handcraftedbits/docker-host

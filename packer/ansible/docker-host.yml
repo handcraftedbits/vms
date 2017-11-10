@@ -1,5 +1,0 @@
----
-- hosts: default
-  remote_user: "root"
-  roles:
-    - docker-host

@@ -1,9 +1,8 @@
 packer_cache/
-sshkeys/
 
 .DS_Store
-*.pem
+.env
 *.properties
 *.retry
 **/letsencrypt
-variables*.json
+**/ssl

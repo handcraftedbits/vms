@@ -1,6 +1,10 @@
 ---
-- hosts: default
-  remote_user: "root"
+- hosts: localhost
+  become: yes
+  become_user: "{{params.vm_username}}"
   roles:
-    - infrastructure
-    - docker-host
+    - handcraftedbits/basic
+    - handcraftedbits/secured
+    - handcraftedbits/docker
+    - handcraftedbits/infrastructure
+    - handcraftedbits/docker-host

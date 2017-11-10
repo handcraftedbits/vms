@@ -1,0 +1,13 @@
+{
+  "ubuntu17.04": {
+    "iso-checksum": "4672ce371fb3c1170a9e71bc4b2810b9",
+    "iso-url": "http://releases.ubuntu.com/17.04/ubuntu-17.04-server-amd64.iso",
+    "name": "ubuntu-17-04-x64"
+  },
+
+  "ubuntu17.10": {
+    "iso-checksum": "be2ab38bb169ed9dddc6cd142a8b9d8b",
+    "iso-url": "http://releases.ubuntu.com/17.10/ubuntu-17.10-server-amd64.iso",
+    "name": "ubuntu-17-10-x64"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "builder_type": "digitalocean",
+
+  "defaults": {
+    "digitalocean-region": "nyc1",
+    "vm-extra-ports": "80,443",
+    "vm-mem": "512mb",
+    "vm-swap": "1024M"
+  }
+}

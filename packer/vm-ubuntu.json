@@ -1,45 +1,13 @@
 {
-  "variables": {
-    "aws_access_key": "",
-    "aws_access_key_id": "",
-    "datastore-cache-directory": "",
-    "datastore-cache-name": "",
-    "datastore-name": "",
-    "digitalocean-apitoken": "",
-    "digitalocean-region": "",
-    "disk-size": "",
-    "esxi-host": "",
-    "esxi-port": "",
-    "esxi-password": "",
-    "esxi-username": "",
-    "extra-ports": "",
-    "extra-ports-udp": "",
-    "git-email": "",
-    "git-name": "",
-    "github-id": "",
-    "github-key-passphrase": "",
-    "ssh-port": "",
-    "vm-cpus": "",
-    "vm-mem": "",
-    "vm-name": "",
-    "vm-network": "",
-    "vm-password": "",
-    "vm-password-raw": "",
-    "vm-swap": "",
-    "vm-publickey": "",
-    "vm-user-fullname": "",
-    "vm-username": ""
-  },
-
   "builders": [
     {
       "type": "digitalocean",
       "api_token": "{{user `digitalocean-apitoken`}}",
-      "image": "{{user `ubuntu-image`}}",
+      "image": "{{user `vm-digitalocean-image-name`}}",
       "region": "{{user `digitalocean-region`}}",
       "size": "{{user `vm-mem`}}",
-      "droplet_name": "{{user `vm-name`}}",
-      "snapshot_name": "{{user `vm-name`}}-ubuntu{{user `ubuntu-version`}}-{{timestamp}}",
+      "droplet_name": "{{user `vm-hostname`}}",
+      "snapshot_name": "{{user `vm-hostname`}}-{{user `vm-digitalocean-image-name`}}-{{timestamp}}",
       "ssh_username": "root"
     },
 
@@ -52,29 +20,31 @@
       "vnc_disable_password": "true",
       
       "remote_type": "esx5",
-      "remote_host": "{{user `esxi-host`}}",
+      "remote_host": "{{user `esxi-hostname`}}",
       "remote_username": "{{user `esxi-username`}}",
       "remote_password": "{{user `esxi-password`}}",
-      "remote_datastore": "{{user `datastore-name`}}",
-      "remote_cache_datastore": "{{user `datastore-cache-name`}}",
-      "remote_cache_directory": "{{user `datastore-cache-directory`}}",
+      "remote_datastore": "{{user `esxi-datastore-name`}}",
+      "remote_cache_datastore": "{{user `esxi-datastore-cache-name`}}",
+      "remote_cache_directory": "{{user `esxi-datastore-cache-directory`}}",
 
-      "vm_name": "{{user `vm-name`}}",
-      "output_directory": "{{user `vm-name`}}",
+      "vm_name": "{{user `vm-hostname`}}",
+      "output_directory": "{{user `vm-hostname`}}",
       "guest_os_type": "ubuntu-64",
-      "vmdk_name": "{{user `vm-name`}}",
-      "disk_size": "{{user `disk-size`}}",
-      "iso_url": "{{user `iso-url`}}",
-      "iso_checksum": "{{user `iso-checksum`}}",
+      "vmdk_name": "{{user `vm-hostname`}}",
+      "disk_size": "{{user `vm-esxi-disk-size`}}",
+      "iso_url": "{{user `vm-esxi-iso-url`}}",
+      "iso_checksum": "{{user `vm-esxi-iso-checksum`}}",
       "iso_checksum_type": "md5",
       "ssh_username": "{{user `vm-username`}}",
-      "ssh_password": "{{user `vm-password-raw`}}",
-      "shutdown_command": "echo {{user `vm-password-raw`}} | sudo -S shutdown -P now",
+      "ssh_password": "{{user `vm-password`}}",
+      "shutdown_command": "echo {{user `vm-password`}} | sudo -S shutdown -P now",
       "vmx_data": {
-        "ethernet0.networkName": "{{user `vm-network`}}",
+        "ethernet0.address": "{{user `vm-mac-address`}}",
+        "ethernet0.addressType": "static",
+        "ethernet0.networkName": "{{user `vm-esxi-network`}}",
         "ethernet0.virtualDev": "vmxnet3",
         "memSize": "{{user `vm-mem`}}",
-        "numvcpus": "{{user `vm-cpus`}}",
+        "numvcpus": "{{user `vm-esxi-cpus`}}",
         "scsi0.virtualDev": "pvscsi"
       },
 
@@ -86,13 +56,13 @@
         "preseed/url=http://{{.HTTPIP}}:{{.HTTPPort}}/preseed.cfg ",
         "debian-installer=en_US auto locale=en_US ",
         "kbd-chooser/method=us keyboard-configuration/layout=USA keyboard-configuration/variant=USA ",
-        "hostname={{user `vm-name`}} ",
+        "hostname={{user `vm-hostname`}} ",
         "fb=false debconf/frontend=noninteractive ",
         "console-setup/ask_detect=false ",
         "passwd/user-fullname={{user `vm-user-fullname`}} ",
         "passwd/username={{user `vm-username`}} ",
-        "passwd/user-password={{user `vm-password-raw`}} ",
-        "passwd/user-password-again={{user `vm-password-raw`}} ",
+        "passwd/user-password={{user `vm-password`}} ",
+        "passwd/user-password-again={{user `vm-password`}} ",
         "initrd=/install/initrd.gz<enter>"
       ]
     }
@@ -100,57 +70,40 @@
   
   "provisioners": [
     {
+      "type": "file",
+      "source": "{{user `vm-data-dir`}}/provision_data",
+      "destination": "/tmp/{{user `vm-hostname`}}"
+    },
+
+    {
+      "type": "file",
+      "source": "{{user `json_vars`}}",
+      "destination": "/tmp/{{user `vm-hostname`}}/params.json"
+    },
+
+    {
       "type": "shell",
       "inline": [
-        "echo {{user `vm-password-raw`}} | sudo -S apt-get install -y python"
+        "echo {{user `vm-password`}} | sudo -S sh -c 'add-apt-repository ppa:ansible/ansible && apt-get update && apt-get install -y ansible python-jmespath'"
       ]
     },
 
     {
-      "type": "ansible",
-      "playbook_file": "{{user `playbook`}}",
-      "ansible_env_vars": [
-        "ANSIBLE_ROLES_PATH={{user `roles-path`}}"
-      ],
+      "type": "ansible-local",
+      "galaxy_file": "{{user `ansible-requirements`}}",
+      "playbook_file": "{{user `ansible-playbook`}}",
       "extra_arguments": [
         "-e",
-        "ansible_become=yes",
-        "-e",
-        "ansible_become_pass={{user `vm-password-raw`}}",
-        "-e",
-        "ansible_become_user=root",
-        "-e",
-        "aws_access_key={{user `aws-access-key`}}",
-        "-e",
-        "aws_access_key_id={{user `aws-access-key-id`}}",
-        "-e",
-        "custom_ports={{user `extra-ports`}}",
-        "-e",
-        "custom_ports_udp={{user `extra-ports-udp`}}",
-        "-e",
-        "git_email={{user `git-email`}}",
-        "-e",
-        "git_name={{user `git-name`}}",
-        "-e",
-        "github_id={{user `github-id`}}",
-        "-e",
-        "github_key_passphrase={{user `github-key-passphrase`}}",
-        "-e",
-        "host_dir='{{user `host-dir`}}'",
-        "-e",
-        "hostname={{user `vm-name`}}",
-        "-e",
-        "password={{user `vm-password`}}",
-        "-e",
-        "publickey='{{user `vm-publickey`}}'",
-        "-e",
-        "ssh_port={{user `ssh-port`}}",
-        "-e",
-        "swap='{{user `vm-swap`}}'",
-        "-e",
-        "username={{user `vm-username`}}",
-        "-e",
-        "user_full_name='{{user `vm-user-fullname`}}'"
+        "ansible_become_pass='{{user `vm-password`}}'",
+        "--extra-vars",
+        "'@/tmp/{{user `vm-hostname`}}/params.json'"
+      ]
+    },
+
+    {
+      "type": "shell",
+      "inline": [
+        "echo {{user `vm-password`}} | sudo -S sh -c 'rm -rf /tmp/*'"
       ]
     }
   ]

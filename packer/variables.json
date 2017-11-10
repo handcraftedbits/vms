@@ -1,0 +1,60 @@
+{
+  "defaults": {
+    "esxi-datastore-cache-directory": "iso",
+    "esxi-datastore-cache-name": "backup01",
+    "esxi-datastore-name": "vm01",
+    "esxi-port": "22",
+    "github-id": "handcraftedbits",
+    "vm-esxi-disk-size": "80000",
+    "vm-esxi-network": "VM Network",
+    "vm-extra-ports": "",
+    "vm-extra-ports-udp": "",
+    "vm-ssh-port": "22",
+    "vm-swap": "",
+    "vm-user-fullname": "Curtiss Howard",
+    "vm-username": "curtiss"
+  },
+
+  "descriptions": {
+    "aws-access-key": "The access key used for AWS API requests",
+    "aws-access-key-id": "The access key ID used for AWS API requests",
+    "aws-region": "The region used for AWS API requests",
+    "digitalocean-apitoken": "The token used for DigitalOcean API requests",
+    "digitalocean-region": "The DigitalOcean region where the VM will be created",
+    "esxi-datastore-cache-directory": "The directory where cached ISOs are stored on the ESXi server",
+    "esxi-datastore-cache-name": "The name of the volume where cached ISOs are stored on the ESXi server",
+    "esxi-datastore-name": "The name of the data store where VMs are created on the ESXi server",
+    "esxi-hostname": "The hostname of the ESXi server used to create the VM",
+    "esxi-password": "The password of the user that will connect to the ESXi server over SSH",
+    "esxi-username": "The name of the user that will connect to the ESXi server over SSH",
+    "git-email": "The email address of the user being created for the VM, to be used in Git configuration",
+    "git-name": "The name of the user being created for the VM, to be used in Git configuration",
+    "github-id": "The GitHub ID of the user being created for the VM",
+    "gpg-key": "The GPG key of the user being created for the VM",
+    "vm-data-dir": "The directory where VM configuration data can be found",
+    "vm-esxi-cpus": "The number of CPUs to allocate for the VM, specified as an integer",
+    "vm-esxi-disk-size": "An integer containing the size, in MB, of the disk used for the created VM, specified as an integer",
+    "vm-esxi-network": "The name of the ESXi network to attach VMs to",
+    "vm-extra-ports": "A comma-separated list of additional TCP ports allowed through the VM's firewall",
+    "vm-extra-ports-udp": "A comma-separated list of additional UDP ports allowed through the VM's firewall",
+    "vm-hostname": "The hostname of the VM being created",
+    "vm-image": "The name of the image used to create the VM",
+    "vm-mem": "The amount of memory, in MB, to allocate for the VM, specified as an integer (for ESXi) or '<integer>mb' (for DigitalOcean)",
+    "vm-ssh-port": "The SSH port for the VM being created",
+    "vm-password": "The password for the user being created for the VM",
+    "vm-swap": "The amount of swap space to allocate (in MB) for the VM, specified as '<integer>M'",
+    "vm-user-fullname": "The full name of the user being created for the VM",
+    "vm-username": "The name of the user being created for the VM"
+  },
+
+  "required": [
+    "vm-data-dir",
+    "vm-hostname",
+    "vm-image",
+    "vm-mem",
+    "vm-password",
+    "vm-ssh-port",
+    "vm-user-fullname",
+    "vm-username"
+  ]
+}

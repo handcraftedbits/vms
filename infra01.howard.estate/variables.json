@@ -1,0 +1,29 @@
+{
+  "builder_type": "esxi",
+
+  "defaults": {
+    "aws-region": "us-east-1",
+    "clone-critical": "true",
+    "clone-media": "true",
+    "clone-misc": "true",
+    "vm-esxi-cpus": "2",
+    "vm-extra-ports": "139,445",
+    "vm-extra-ports-udp": "137,138",
+    "vm-mem": "16384"
+  },
+
+  "descriptions": {
+    "clone-critical": "Whether or not the 'hcb-critical' s3 bucket should be cloned.",
+    "clone-media": "Whether or not the 'hcb-media' s3 bucket should be cloned.",
+    "clone-misc": "Whether or not the 'hcb-misc' s3 bucket should be cloned."
+  },
+
+  "required": [
+    "aws-access-key",
+    "aws-access-key-id",
+    "aws-region",
+    "clone-critical",
+    "clone-media",
+    "clone-misc"
+  ]
+}
