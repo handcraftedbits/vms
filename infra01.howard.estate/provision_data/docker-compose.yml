@@ -7,9 +7,9 @@ services:
       - GROUPID=${SAMBA_GROUP_ID}
       - USERID=${SAMBA_USER_ID}
     command: >
-      -u "${SAMBA_USERNAME};${SAMBA_PASSWORD}" -s "critical;/shares/critical;yes;no;no;${SAMBA_USERNAME}"
-      -s "media;/shares/media;yes;no;no;${SAMBA_USERNAME}"
-      -s "misc;/shares/misc;yes;no;no;${SAMBA_USERNAME}" -n
+      -u "${SAMBA_USERNAME};${SAMBA_PASSWORD}" -s "critical;/s3/critical;yes;no;no;${SAMBA_USERNAME}"
+      -s "media;/s3/media;yes;no;no;${SAMBA_USERNAME}"
+      -s "misc;/s3/misc;yes;no;no;${SAMBA_USERNAME}" -n
     ports:
       - "137:137/udp"
       - "138:138/udp"
@@ -18,6 +18,6 @@ services:
     network_mode: "host"
     restart: always
     volumes:
-      - /shares/critical:/shares/critical
-      - /shares/media:/shares/media
-      - /shares/misc:/shares/misc
+      - /s3/critical:/s3/critical
+      - /s3/media:/s3/media
+      - /s3/misc:/s3/misc

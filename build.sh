@@ -253,4 +253,6 @@ params[vm-mac-address]=$(echo ${params[vm-hostname]} | md5sum | \
 
 check_params
 
+echo -e "MAC address for host ${params[vm-hostname]}: ${params[vm-mac-address]}\n"
+
 run_packer ${dir_packer}
