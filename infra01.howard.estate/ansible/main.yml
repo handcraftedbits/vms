@@ -16,10 +16,8 @@
       s3_clone_aws_access_key_id: "{{params.aws_access_key_id}}"
       s3_clone_aws_region: "{{params.aws_region}}"
       s3_clone_buckets:
-        - { name: "hcb-critical", path: "critical" }
-        - { name: "hcb-git", path: "git" }
-        #- { name: "hcb-media", path: "media" }
-        #- { name: "hcb-misc", path: "misc" }
+        - { name: "hcb-critical", path: "critical", hour: "3", minute: "0" }
+        - { name: "hcb-git", path: "git", hour: "3", minute: "5" }
       s3_clone_password: "{{params.vm_password}}"
       s3_clone_username: "{{params.vm_username}}"
     - role: handcraftedbits/git_host
