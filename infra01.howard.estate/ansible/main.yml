@@ -21,21 +21,6 @@
         - { name: "hcb-misc", path: "misc", hour: "3", minute: "15" }
       s3_clone_password: "{{params.vm_password}}"
       s3_clone_username: "{{params.vm_username}}"
-    - role: handcraftedbits/create_user
-      create_user_password: "{{params.vm_password}}"
-      create_user_username: git
-    - role: handcraftedbits/s3_clone
-      s3_clone_aws_access_key: "{{params.aws_access_key}}"
-      s3_clone_aws_access_key_id: "{{params.aws_access_key_id}}"
-      s3_clone_aws_region: "{{params.aws_region}}"
-      s3_clone_buckets:
-        - { name: "hcb-git", path: "git", hour: "3", minute: "5" }
-      s3_clone_password: "{{params.vm_password}}"
-      s3_clone_username: git
-    - role: handcraftedbits/git_host
-      git_host_github_id: "{{params.github_id}}"
-      git_host_repos_path: /s3/git
-      git_host_password: "{{params.vm_password}}"
     - role: handcraftedbits/samba_host
       samba_host_hostname: "{{params.vm_hostname}}"
       samba_host_password: "{{params.vm_password}}"
