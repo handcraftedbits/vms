@@ -36,16 +36,11 @@ function check_params() {
 }
 
 function get_builder_required_params() {
-     # Based on the builder type (ESXi or DigitalOcean), there will be several implicitly required parameters.
+     # Based on the builder type, there will be several implicitly required parameters.
 
      builder_type=$(jq -r '.builder_type' ${1} 2> /dev/null)
 
      case ${builder_type} in
-          digitalocean)
-               required[digitalocean-apitoken]=true
-               required[digitalocean-region]=true
-               ;;
-
           esxi)
                required[esxi-datastore-cache-directory]=true
                required[esxi-datastore-cache-name]=true
@@ -142,20 +137,19 @@ function run_packer() {
 
      cmd+=" -var json_vars=${temp_file}"
 
-     # Add the Packer provisioner and image variables based on which params (digitalocean or esxi) are marked as
-     # required (these values were already set based on the builder_type specified in variables.json).
+     # Add the Packer provisioner and image variables based on which params are marked as # required (these values were
+     # already set based on the builder_type specified in variables.json).
 
-     if [ ! -z "${required[esxi-username]}" ]
-     then
-          cmd+=" -var vm-esxi-iso-checksum=\"${images[${params[vm-image]}.iso-checksum]}\""
-          cmd+=" -var vm-esxi-iso-url=\"${images[${params[vm-image]}.iso-url]}\""
-          cmd+=" -only vmware-iso"
-     else
-          cmd+=" -var vm-digitalocean-image-name=\"${images[${params[vm-image]}.name]}\""
-          cmd+=" -only digitalocean"
-     fi
+     case ${builder_type} in
+          esxi)
+               cmd+=" -var vm-esxi-iso-checksum=\"${images[${params[vm-image]}.iso-checksum]}\""
+               cmd+=" -var vm-esxi-iso-checksum-type=\"${images[${params[vm-image]}.iso-checksum-type]}\""
+               cmd+=" -var vm-esxi-iso-url=\"${images[${params[vm-image]}.iso-url]}\""
+               cmd+=" -only vmware-iso"
+               ;;
+     esac
 
-     cmd+=" ${1}/vm-ubuntu.json; rm -f ${temp_file})"
+     cmd+=" ${1}/${images[${params[vm-image]}.packer-file]}; rm -f ${temp_file})"
 
      eval ${cmd}
 }
