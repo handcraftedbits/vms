@@ -53,9 +53,12 @@
       java_username: "{{params.vm_username}}"
     - role: handcraftedbits/nodejs
       nodejs_extra_tools:
+        - aws-sam-local
         - bower
         - gulp-cli
         - http-server
+      nodejs_password: "{{params.vm_password}}"
+      nodejs_username: "{{params.vm_username}}"
     - role: handcraftedbits/packer
     - role: handcraftedbits/samba_client
       samba_client_hostname: infra01.howard.estate
