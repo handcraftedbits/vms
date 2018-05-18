@@ -1,19 +1,8 @@
 {
   "builders": [
     {
-      "type": "digitalocean",
-      "api_token": "{{user `digitalocean-apitoken`}}",
-      "image": "{{user `vm-digitalocean-image-name`}}",
-      "region": "{{user `digitalocean-region`}}",
-      "size": "{{user `vm-mem`}}",
-      "droplet_name": "{{user `vm-hostname`}}",
-      "snapshot_name": "{{user `vm-hostname`}}-{{user `vm-digitalocean-image-name`}}-{{timestamp}}",
-      "ssh_username": "root"
-    },
-
-    {
       "type": "vmware-iso",
-      "version": "11",
+      "version": "14",
       "headless": "true",
       "http_directory": "http",
       "keep_registered": "true",
@@ -29,16 +18,18 @@
 
       "vm_name": "{{user `vm-hostname`}}",
       "output_directory": "{{user `vm-hostname`}}",
-      "guest_os_type": "ubuntu-64",
+      "guest_os_type": "debian9-64",
       "vmdk_name": "{{user `vm-hostname`}}",
       "disk_size": "{{user `vm-esxi-disk-size`}}",
       "iso_url": "{{user `vm-esxi-iso-url`}}",
       "iso_checksum": "{{user `vm-esxi-iso-checksum`}}",
-      "iso_checksum_type": "md5",
-      "ssh_username": "{{user `vm-username`}}",
+      "iso_checksum_type": "{{user `vm-esxi-iso-checksum-type`}}",
+      "ssh_username": "root",
       "ssh_password": "{{user `vm-password`}}",
+      "ssh_timeout": "20m",
       "shutdown_command": "echo {{user `vm-password`}} | sudo -S shutdown -P now",
       "vmx_data": {
+        "cpuid.coresPerSocket": "{{user `vm-esxi-cpus`}}",
         "ethernet0.address": "{{user `vm-mac-address`}}",
         "ethernet0.addressType": "static",
         "ethernet0.networkName": "{{user `vm-esxi-network`}}",
@@ -49,21 +40,12 @@
       },
 
       "boot_command": [
-        "<esc><f6><esc>",
-        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-        "<bs><bs><bs><bs>",
-        "preseed/url=http://{{.HTTPIP}}:{{.HTTPPort}}/preseed.cfg ",
-        "debian-installer=en_US auto locale=en_US ",
-        "kbd-chooser/method=us keyboard-configuration/layout=USA keyboard-configuration/variant=USA ",
-        "hostname={{user `vm-hostname`}} ",
-        "fb=false debconf/frontend=noninteractive ",
-        "console-setup/ask_detect=false ",
-        "passwd/user-fullname={{user `vm-user-fullname`}} ",
-        "passwd/username={{user `vm-username`}} ",
-        "passwd/user-password={{user `vm-password`}} ",
-        "passwd/user-password-again={{user `vm-password`}} ",
-        "initrd=/install/initrd.gz<enter>"
+        "<esc><wait>",
+        "install auto=true priority=critical url=http://{{.HTTPIP}}:{{.HTTPPort}}/preseed-debian.cfg ",
+        "netcfg/hostname={{user `vm-hostname`}} ",
+        "passwd/root-password={{user `vm-password`}} ",
+        "passwd/root-password-again={{user `vm-password`}}",
+        "<enter>"
       ]
     }
   ],
@@ -79,13 +61,6 @@
       "type": "file",
       "source": "{{user `json_vars`}}",
       "destination": "/tmp/{{user `vm-hostname`}}/params.json"
-    },
-
-    {
-      "type": "shell",
-      "inline": [
-        "echo {{user `vm-password`}} | sudo -S sh -c 'add-apt-repository ppa:ansible/ansible && apt-get update && apt-get install -y ansible python-jmespath'"
-      ]
     },
 
     {

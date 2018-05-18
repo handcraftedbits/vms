@@ -2,6 +2,7 @@
   "builder_type": "esxi",
 
   "defaults": {
+    "aws-region": "us-east-1",
     "git-email": "opensource@handcraftedbits.com",
     "git-name": "HandcraftedBits",
     "gpg-key": "0xBCB3656DC6035119",
@@ -10,9 +11,13 @@
   },
 
   "required": [
+    "aws-access-key",
+    "aws-access-key-id",
+    "aws-region",
     "git-email",
     "git-name",
     "github-id",
+    "gopass-ssh-key-id",
     "gpg-key"
   ]
 }
