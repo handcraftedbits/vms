@@ -2,67 +2,67 @@
 - hosts: localhost
   become: yes
   roles:
-    - role: handcraftedbits/vm_basic
+    - role: handcraftedbits/debian/vm_basic
       vm_basic_github_id: "{{params.github_id}}"
       vm_basic_hostname: "{{params.vm_hostname}}"
       vm_basic_password: "{{params.vm_password}}"
       vm_basic_ssh_port: "{{params.vm_ssh_port}}"
       vm_basic_user_fullname: "{{params.vm_user_fullname}}"
       vm_basic_username: "{{params.vm_username}}"
-    - role: handcraftedbits/aws
+    - role: handcraftedbits/debian/aws
       aws_access_key: "{{params.aws_access_key}}"
       aws_access_key_id: "{{params.aws_access_key_id}}"
       aws_region: "{{params.aws_region}}"
       aws_password: "{{params.vm_password}}"
       aws_username: "{{params.vm_username}}"
-    - role: handcraftedbits/github
+    - role: handcraftedbits/debian/github
       github_id: "{{params.github_id}}"
       github_password: "{{params.vm_password}}"
       github_username: "{{params.vm_username}}"
-    - role: handcraftedbits/emacs
+    - role: handcraftedbits/debian/emacs
       emacs_password: "{{params.vm_password}}"
       emacs_username: "{{params.vm_username}}"
-    - role: handcraftedbits/gpg
+    - role: handcraftedbits/debian/gpg
       gpg_key: "{{params.gpg_key}}"
       gpg_password: "{{params.vm_password}}"
       gpg_username: "{{params.vm_username}}"
-    - role: handcraftedbits/vscode
+    - role: handcraftedbits/debian/vscode
       vscode_password: "{{params.vm_password}}"
       vscode_username: "{{params.vm_username}}"
-    - role: handcraftedbits/xfce
+    - role: handcraftedbits/debian/xfce
       xfce_password: "{{params.vm_password}}"
       xfce_username: "{{params.vm_username}}"
-    - role: handcraftedbits/docker
+    - role: handcraftedbits/debian/docker
       docker_password: "{{params.vm_password}}"
       docker_username: "{{params.vm_username}}"
-    - role: handcraftedbits/git
+    - role: handcraftedbits/debian/git
       git_email: "{{params.git_email}}"
       git_name: "{{params.git_name}}"
       git_password: "{{params.vm_password}}"
       git_username: "{{params.vm_username}}"
-    - role: handcraftedbits/go
+    - role: handcraftedbits/debian/go
       go_password: "{{params.vm_password}}"
       go_username: "{{params.vm_username}}"
-    - role: handcraftedbits/gopass
+    - role: handcraftedbits/debian/gopass
       gopass_password: "{{params.vm_password}}"
       gopass_ssh_key_id: "{{params.gopass_ssh_key_id}}"
       gopass_username: "{{params.vm_username}}"
-    - role: handcraftedbits/hugo
-    - role: handcraftedbits/java
+    - role: handcraftedbits/debian/hugo
+    - role: handcraftedbits/debian/java
       java_password: "{{params.vm_password}}"
       java_username: "{{params.vm_username}}"
-    - role: handcraftedbits/nodejs
+    - role: handcraftedbits/debian/nodejs
       nodejs_extra_tools:
         - bower
         - gulp-cli
         - http-server
       nodejs_password: "{{params.vm_password}}"
       nodejs_username: "{{params.vm_username}}"
-    - role: handcraftedbits/packer
-    - role: handcraftedbits/vnc
+    - role: handcraftedbits/debian/packer
+    - role: handcraftedbits/debian/vnc
       vnc_password: "{{params.vm_password}}"
       vnc_username: "{{params.vm_username}}"
-    - role: handcraftedbits/dotfiles_relink
+    - role: handcraftedbits/debian/dotfiles_relink
       dotfiles_relink_github_id: "{{params.github_id}}"
       dotfiles_relink_password: "{{params.vm_password}}"
       dotfiles_relink_username: "{{params.vm_username}}"

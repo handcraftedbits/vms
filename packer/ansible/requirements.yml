@@ -1,3 +1,2 @@
 - src: https://github.com/handcraftedbits/ansible-handcraftedbits
   name: handcraftedbits
-  version: debian
