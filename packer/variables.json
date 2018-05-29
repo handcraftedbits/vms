@@ -51,9 +51,6 @@
     "vm-hostname",
     "vm-image",
     "vm-mem",
-    "vm-password",
-    "vm-ssh-port",
-    "vm-user-fullname",
-    "vm-username"
+    "vm-password"
   ]
 }

@@ -7,6 +7,7 @@
     "git-name": "HandcraftedBits",
     "gpg-key": "0xBCB3656DC6035119",
     "vm-esxi-cpus": "2",
+    "vm-image": "debian9",
     "vm-mem": "8192"
   },
 
@@ -18,6 +19,9 @@
     "git-name",
     "github-id",
     "gopass-ssh-key-id",
-    "gpg-key"
+    "gpg-key",
+    "vm-ssh-port",
+    "vm-user-fullname",
+    "vm-username"
   ]
 }
