@@ -1,8 +1,0 @@
----
-- hosts: localhost
-  become: yes
-  roles:
-    - handcraftedbits/basic
-    - handcraftedbits/secured
-    - handcraftedbits/docker
-    - handcraftedbits/docker-host
