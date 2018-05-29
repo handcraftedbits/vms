@@ -1,0 +1,9 @@
+{
+  "builder_type": "esxi",
+
+  "defaults": {
+    "vm-esxi-cpus": "2",
+    "vm-image": "rancheros",
+    "vm-mem": "16384"
+  }
+}

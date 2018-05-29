@@ -4,5 +4,12 @@
     "iso-checksum-type": "sha512",
     "iso-url": "http://www.gtlib.gatech.edu/pub/debian-cd/9.4.0/amd64/iso-cd/debian-9.4.0-amd64-netinst.iso",
     "packer-file": "vm-debian.json"
+  },
+
+  "rancheros": {
+    "iso-checksum": "1105cb8ca8e82fdcba17c517c742caa08135a621541d5dc319fd28a65287992d",
+    "iso-checksum-type": "sha256",
+    "iso-url": "https://github.com/rancher/os/releases/download/v1.3.0/rancheros.iso",
+    "packer-file": "vm-rancheros.json"
   }
 }

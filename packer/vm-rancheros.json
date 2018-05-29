@@ -1,0 +1,66 @@
+{
+  "builders": [
+    {
+      "type": "vmware-iso",
+      "version": "14",
+      "headless": "true",
+      "http_directory": "http",
+      "keep_registered": "true",
+      "vnc_disable_password": "true",
+      
+      "remote_type": "esx5",
+      "remote_host": "{{user `esxi-hostname`}}",
+      "remote_username": "{{user `esxi-username`}}",
+      "remote_password": "{{user `esxi-password`}}",
+      "remote_datastore": "{{user `esxi-datastore-name`}}",
+      "remote_cache_datastore": "{{user `esxi-datastore-cache-name`}}",
+      "remote_cache_directory": "{{user `esxi-datastore-cache-directory`}}",
+
+      "vm_name": "{{user `vm-hostname`}}",
+      "output_directory": "{{user `vm-hostname`}}",
+      "guest_os_type": "ubuntu-64",
+      "vmdk_name": "{{user `vm-hostname`}}",
+      "disk_size": "{{user `vm-esxi-disk-size`}}",
+      "iso_url": "{{user `vm-esxi-iso-url`}}",
+      "iso_checksum": "{{user `vm-esxi-iso-checksum`}}",
+      "iso_checksum_type": "{{user `vm-esxi-iso-checksum-type`}}",
+      "ssh_username": "rancher",
+      "ssh_password": "{{user `vm-password`}}",
+      "ssh_timeout": "20m",
+      "boot_wait": "10s",
+      "shutdown_command": "sudo shutdown -h now",
+      "vmx_data": {
+        "cpuid.coresPerSocket": "{{user `vm-esxi-cpus`}}",
+        "ethernet0.address": "{{user `vm-mac-address`}}",
+        "ethernet0.addressType": "static",
+        "ethernet0.networkName": "{{user `vm-esxi-network`}}",
+        "ethernet0.virtualDev": "vmxnet3",
+        "memSize": "{{user `vm-mem`}}",
+        "numvcpus": "{{user `vm-esxi-cpus`}}",
+        "scsi0.virtualDev": "pvscsi"
+      },
+
+      "boot_command": [
+        "<wait45>",
+        "echo 'rancher:{{user `vm-password`}}' | sudo chpasswd",
+        "<enter>"
+      ]
+    }
+  ],
+  
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "{{user `vm-data-dir`}}/provision_data",
+      "destination": "/tmp/{{user `vm-hostname`}}"
+    },
+
+    {
+      "type": "shell",
+      "inline": [
+        "sudo ros install -d /dev/sda -f -t generic -no-reboot -c /tmp/{{user `vm-hostname`}}/cloud-config.yml",
+        "sudo rm -rf /tmp/*"
+      ]
+    }
+  ]
+}
