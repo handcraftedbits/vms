@@ -18,7 +18,7 @@
 
       "vm_name": "{{user `vm-hostname`}}",
       "output_directory": "{{user `vm-hostname`}}",
-      "guest_os_type": "ubuntu-64",
+      "guest_os_type": "other4xlinux-64",
       "vmdk_name": "{{user `vm-hostname`}}",
       "disk_size": "{{user `vm-esxi-disk-size`}}",
       "iso_url": "{{user `vm-esxi-iso-url`}}",
@@ -51,15 +51,14 @@
   "provisioners": [
     {
       "type": "file",
-      "source": "{{user `vm-data-dir`}}/provision_data",
+      "source": "{{user `vm-data-dir`}}/provision_data_fixed",
       "destination": "/tmp/{{user `vm-hostname`}}"
     },
 
     {
       "type": "shell",
       "inline": [
-        "sudo ros install -d /dev/sda -f -t generic -no-reboot -c /tmp/{{user `vm-hostname`}}/cloud-config.yml",
-        "sudo rm -rf /tmp/*"
+        "sudo ros install -d /dev/sda -f -t generic -no-reboot -c /tmp/{{user `vm-hostname`}}/cloud-config.yml"
       ]
     }
   ]

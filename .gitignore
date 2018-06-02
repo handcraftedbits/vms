@@ -1,8 +1,7 @@
 packer_cache/
+**/provision_data_fixed/
 
 .DS_Store
 .env
 *.properties
 *.retry
-**/letsencrypt
-**/ssl

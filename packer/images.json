@@ -7,9 +7,9 @@
   },
 
   "rancheros": {
-    "iso-checksum": "1105cb8ca8e82fdcba17c517c742caa08135a621541d5dc319fd28a65287992d",
+    "iso-checksum": "8ecefba0ccaccbd11d3f4a928809bc37bff1e8b2da4ad10efdf0f536f5000ed0",
     "iso-checksum-type": "sha256",
-    "iso-url": "https://github.com/rancher/os/releases/download/v1.3.0/rancheros.iso",
+    "iso-url": "https://github.com/rancher/os/releases/download/v1.4.0/rancheros.iso",
     "packer-file": "vm-rancheros.json"
   }
 }

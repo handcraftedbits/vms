@@ -35,6 +35,21 @@ function check_params() {
      fi
 }
 
+function fix_provision_data() {
+     vm_dir=${params[vm-data-dir]}
+
+     rm -rf ${vm_dir}/provision_data_fixed
+     cp -R ${vm_dir}/provision_data ${vm_dir}/provision_data_fixed
+
+     for filename in $(ls ${vm_dir}/provision_data_fixed)
+     do
+          for key in ${!params[@]}
+          do
+               sed -i 's^{{'"${key}"'}}^'"${params[${key}]}"'^g' ${vm_dir}/provision_data_fixed/${filename}
+          done
+     done
+}
+
 function get_builder_required_params() {
      # Based on the builder type, there will be several implicitly required parameters.
 
@@ -249,4 +264,8 @@ check_params
 
 echo -e "MAC address for host ${params[vm-hostname]}: ${params[vm-mac-address]}\n"
 
+fix_provision_data
+
 run_packer ${dir_packer}
+
+rm -rf ${vm_dir}/provision_data_fixed

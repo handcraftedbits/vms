@@ -2,8 +2,18 @@
   "builder_type": "esxi",
 
   "defaults": {
+    "postgresql-db": "stable",
     "vm-esxi-cpus": "2",
     "vm-image": "rancheros",
     "vm-mem": "16384"
-  }
+  },
+
+  "required": [
+    "aws-access-key",
+    "aws-access-key-id",
+    "nfs-vault",
+    "postgresql-db",
+    "postgresql-password",
+    "postgresql-username"
+  ]
 }
