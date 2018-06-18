@@ -18,7 +18,9 @@
   "descriptions": {
     "aws-access-key": "The access key used for AWS API requests",
     "aws-access-key-id": "The access key ID used for AWS API requests",
+    "aws-hosted-zone-id": "The AWS hosted zone ID used for Route53 records",
     "aws-region": "The region used for AWS API requests",
+    "cifs-media": "The location of the 'media' CIFS share",
     "esxi-datastore-cache-directory": "The directory where cached ISOs are stored on the ESXi server",
     "esxi-datastore-cache-name": "The name of the volume where cached ISOs are stored on the ESXi server",
     "esxi-datastore-name": "The name of the data store where VMs are created on the ESXi server",
@@ -30,6 +32,7 @@
     "github-id": "The GitHub ID of the user being created for the VM",
     "gopass_ssh_key_id": "The AWS SSH key ID used for the password store",
     "gpg-key": "The GPG key of the user being created for the VM",
+    "ldap-password": "The LDAP password",
     "nfs-vault": "The location of the NFS vault",
     "postgresql-db": "The name of the (stable) PostgreSQL database to use",
     "postgresql-password": "The password for the (stable) PostgreSQL database",
@@ -47,7 +50,9 @@
     "vm-password": "The password for the user being created for the VM",
     "vm-swap": "The amount of swap space to allocate (in MB) for the VM, specified as '<integer>M'",
     "vm-user-fullname": "The full name of the user being created for the VM",
-    "vm-username": "The name of the user being created for the VM"
+    "vm-username": "The name of the user being created for the VM",
+    "webdav-password": "The WebDAV password",
+    "webdav-username": "The WebDAV username"
   },
 
   "required": [

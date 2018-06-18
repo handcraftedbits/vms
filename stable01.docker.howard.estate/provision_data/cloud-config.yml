@@ -3,6 +3,7 @@ hostname: "{{vm-hostname}}"
 # NFS/CIFS volume drivers don't seem to work in RancherOS...
 mounts:
   - ["{{nfs-vault}}/critical", "/mnt/critical", "nfs4", ""]
+  - ["{{cifs-media}}", "/mnt/media", "cifs", "username=guest"]
   - ["{{nfs-vault}}/sysdocker", "/mnt/sysdocker", "nfs4", ""]
 ssh_authorized_keys:
   - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCp960By9RvYJdgsGBNQv4D4RTmIWYrn8PwdSFqadCYBw6eKVVLWssLo0zybZbDecNfkYNbkWQUdYvLWyw51s96qkWyX/mZA2ENtqO6zBasbkUac+XqU9SAAoX2dCZpuJpEtVWHInPcKHkve4ZwG//sCjy6/keRoZhfZWwA4dJhV3CPS5DXxW0i6taasLA7KkMwfjqSC2lNLiDftRuwdVMuPF+aqJLaR8LyryMqvz3fPRL8KOCB1CkrnL4+q5cBim8Pygw9lUnOp5On9wKP3uOR63C+lwtO6Db1gwekNcY3p6QVaMeU75bgNOmPCUv/O+xNODYR/8B/1dplR5yyQHApD4HvJJ7lyLjbKAEwXW12s3+3iqhhdIH1V8RW1f87ZocD44GrPHtPShemnd/8aKUfbM5J3bQC9w78hBTDxSFEMTXK8bS6I1hPwXDbWeSDQ4T9kLoChx93+95xu1tdTjecwSgaG0tQMGaG+xrke6Q9CTI8voZHt2tlkrxi93QD2JWSUSSUknrA4/K18hGjpeJKbxZsodufWd5E0B/HRgxdeZmcMwgNmka1RHDluevB9ajj0f7mxpz5VFNTtUfyIckW7EUiGxDKyctSw8LHOEOd1Wg8oe+SHzIZUdhm/OojEiQDmvUc5LkIszSA5VMdUokx6wmho+fHFbIKYgd5ql25xQ==
@@ -12,27 +13,153 @@ rancher:
     extra_args: ['-H', 'tcp://0.0.0.0:2375']
   
   services:
-    acme.sh:
-      image: neilpang/acme.sh
-      command: --issue --dns dns_aws -d '*.howard.estate'
-      labels:
-        io.rancher.os.scope: system
-        cron.schedule: "@daily"
-      net: host
-      volumes:
-        - /mnt/critical/letsencrypt:/acme.sh
+    confluence:
+      image: atlassian/confluence-server
       environment:
-        - AWS_ACCESS_KEY_ID={{aws-access-key-id}}
-        - AWS_SECRET_ACCESS_KEY={{aws-access-key}}
-
-    postgresql:
-      image: postgres
+        - CATALINA_CONNECTOR_PROXYNAME=wiki.howard.estate
+        - CATALINA_CONNECTOR_PROXYPORT=443
+        - CATALINA_CONNECTOR_SCHEME=https
+        - CATALINA_CONNECTOR_SECURE=true
+      labels:
+        - traefik.backend=wiki
+        - traefik.enable=true
+        - traefik.frontend.rule=Host:wiki.howard.estate
+        - traefik.port=8090
+        - traefik.protocol=http
+      links:
+        - ldap
+        - postgresql
       restart: always
       volumes:
-        - /mnt/sysdocker/stable01.postgresql:/var/lib/postgresql/data
-      ports:
-        - 5432:5432
+        - /mnt/sysdocker/{{vm-hostname}}/confluence:/var/atlassian/application-data/confluence
+
+    gogs:
+      image: gogs/gogs
+      labels:
+        - traefik.backend=gogs
+        - traefik.enable=true
+        - traefik.frontend.rule=Host:git.howard.estate
+        - traefik.port=3000
+        - traefik.protocol=http
+      links:
+        - ldap
+        - postgresql
+      restart: always
+      volumes:
+        - /mnt/sysdocker/{{vm-hostname}}/gogs:/data
+
+    ldap:
+      image: osixia/openldap
+      environment:
+        - LDAP_ADMIN_PASSWORD={{ldap-password}}
+        - LDAP_DOMAIN=howard.estate
+        - LDAP_ORGANISATION="Howard Estate"
+        - LDAP_TLS=false
+      restart: always
+      volumes:
+        - /mnt/sysdocker/{{vm-hostname}}/ldap/database:/var/lib/ldap
+        - /mnt/sysdocker/{{vm-hostname}}/ldap/slapd.d:/etc/ldap/slapd.d
+
+    ldapadmin:
+      image: osixia/phpldapadmin
+      environment:
+        - PHPLDAPADMIN_HTTPS=false
+        - PHPLDAPADMIN_LDAP_HOSTS=ldap
+        - PHPLDAPADMIN_TRUST_PROXY_SSL=true
+      labels:
+        - traefik.backend=ldapadmin
+        - traefik.enable=true
+        - traefik.frontend.rule=Host:ldap.howard.estate
+        - traefik.port=80
+        - traefik.protocol=http
+      links:
+        - ldap
+      restart: always
+
+    plex:
+      image: plexinc/pms-docker
+      environment:
+        - TZ=America/New_York
+      net: host
+      volumes:
+        - /mnt/media:/data
+        - /var/plex:/config
+    
+    portainer:
+      image: portainer/portainer
+      labels:
+        - traefik.backend=portainer
+        - traefik.enable=true
+        - traefik.frontend.rule=Host:{{vm-hostname}};PathPrefixStrip:/portainer
+        - traefik.port=9000
+        - traefik.protocol=http
+      restart: always
+      volumes:
+        - /mnt/sysdocker/{{vm-hostname}}/portainer:/data
+        - /var/run/docker.sock:/var/run/docker.sock
+    
+    postgresql:
+      image: postgres
       environment:
         - POSTGRES_DB={{postgresql-db}}
         - POSTGRES_PASSWORD={{postgresql-password}}
         - POSTGRES_USER={{postgresql-username}}
+      restart: always
+      volumes:
+        - /mnt/sysdocker/{{vm-hostname}}/postgresql:/var/lib/postgresql/data
+
+    traefik:
+      image: traefik
+      command: >-
+        --acme
+        --acme.acmelogging=true
+        --acme.dnschallenge
+        --acme.dnschallenge.delaybeforecheck=300
+        --acme.dnschallenge.provider=route53
+        --acme.domains='{{vm-hostname}}'
+        --acme.email='curtiss@curtisshoward.com'
+        --acme.entrypoint=https
+        --acme.onhostrule=true
+        --acme.storage=acme.json
+        --api
+        --debug
+        --defaultentrypoints=https,http
+        --docker
+        --docker.domain={{vm-hostname}}
+        --docker.exposedbydefault=false
+        --entrypoints='Name:http Address::80 Redirect.EntryPoint:https'
+        --entrypoints='Name:https Address::443 TLS'
+        --loglevel=DEBUG
+        --retry
+      environment:
+        - AWS_ACCESS_KEY_ID={{aws-access-key-id}}
+        - AWS_HOSTED_ZONE_ID={{aws-hosted-zone-id}}
+        - AWS_REGION={{aws-region}}
+        - AWS_SECRET_ACCESS_KEY={{aws-access-key}}
+      labels:
+        - traefik.backend=traefik
+        - traefik.enable=true
+        - traefik.frontend.rule=Host:{{vm-hostname}};PathPrefixStrip:/traefik
+        - traefik.port=8080
+        - traefik.protocol=http
+      ports:
+        - 80:80
+        - 443:443
+      restart: always
+      volumes:
+        - /mnt/sysdocker/{{vm-hostname}}/traefik/acme.json:/acme.json
+        - /var/run/docker.sock:/var/run/docker.sock
+
+    webdav:
+      image: viossat/keeweb-webdav
+      environment:
+        - WEBDAV_PASSWORD={{webdav-password}}
+        - WEBDAV_USERNAME={{webdav-username}}
+      labels:
+        - traefik.backend=webdav
+        - traefik.enable=true
+        - traefik.frontend.rule=Host:frontdoor.howard.estate;PathPrefix:/webdav
+        - traefik.port=80
+        - traefik.protocol=http
+      volumes:
+        - /mnt/critical/webdav:/var/www/html/webdav

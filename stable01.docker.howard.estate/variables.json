@@ -11,9 +11,15 @@
   "required": [
     "aws-access-key",
     "aws-access-key-id",
+    "aws-hosted-zone-id",
+    "aws-region",
+    "cifs-media",
+    "ldap-password",
     "nfs-vault",
     "postgresql-db",
     "postgresql-password",
-    "postgresql-username"
+    "postgresql-username",
+    "webdav-password",
+    "webdav-username"
   ]
 }
